@@ -30,7 +30,7 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route('/activitylog')
+@app.route('/cesi/activitylog')
 def getlogtail():
     n=12
     try:
@@ -60,7 +60,7 @@ def getlogtail():
 
 
 # Username and password control
-@app.route('/login/control', methods = ['GET', 'POST'])
+@app.route('/cesi/login/control', methods = ['GET', 'POST'])
 def control():
     if request.method == 'POST':
         username = request.form['email']
@@ -92,12 +92,12 @@ def control():
                                message = "Invalid password")
 
 # Render login page
-@app.route('/login', methods = ['GET', 'POST'])
+@app.route('/cesi/login', methods = ['GET', 'POST'])
 def login():
     return render_template('login.html')
 
 # Logout action
-@app.route('/logout', methods = ['GET', 'POST'])
+@app.route('/cesi/logout', methods = ['GET', 'POST'])
 def logout():
     add_log = open(ACTIVITY_LOG, "a")
     add_log.write("%s - %s logged out.\n"%( datetime.now().ctime(), session['username'] ))
@@ -105,7 +105,7 @@ def logout():
     return redirect(url_for('login'))
 
 # Dashboard
-@app.route('/')
+@app.route('/cesi/')
 def showMain():
 # get user type
     if session.get('logged_in'):
@@ -217,7 +217,7 @@ def showMain():
 
 
 # Show node
-@app.route('/node/<node_name>')
+@app.route('/cesi/node/<node_name>')
 def showNode(node_name):
     if session.get('logged_in'):
         node_config = Config(CONFIG_FILE).getNodeConfig(node_name)
@@ -229,7 +229,7 @@ def showNode(node_name):
         add_log.write("%s - Illegal request for view node %s .\n"%( datetime.now().ctime(), node_name ))
         return redirect(url_for('login'))
 
-@app.route('/group/<group_name>/environment/<environment_name>')
+@app.route('/cesi/group/<group_name>/environment/<environment_name>')
 def showGroup(group_name, environment_name):
     if session.get('logged_in'):
         env_memberlist = Config(CONFIG_FILE).getMemberNames(environment_name)
@@ -256,7 +256,7 @@ def showGroup(group_name, environment_name):
         return redirect(url_for('login'))
 
 
-@app.route('/node/<node_name>/process/<process_name>/restart')
+@app.route('/cesi/node/<node_name>/process/<process_name>/restart')
 def json_restart(node_name, process_name):
     if session.get('logged_in'):
         if session['usertype'] == 0 or session['usertype'] == 1:
@@ -283,7 +283,7 @@ def json_restart(node_name, process_name):
         return redirect(url_for('login'))
 
 # Process start
-@app.route('/node/<node_name>/process/<process_name>/start')
+@app.route('/cesi/node/<node_name>/process/<process_name>/start')
 def json_start(node_name, process_name):
     if session.get('logged_in'):
         if session['usertype'] == 0 or session['usertype'] == 1:
@@ -309,7 +309,7 @@ def json_start(node_name, process_name):
         return redirect(url_for('login'))
 
 # Process stop
-@app.route('/node/<node_name>/process/<process_name>/stop')
+@app.route('/cesi/node/<node_name>/process/<process_name>/stop')
 def json_stop(node_name, process_name):
     if session.get('logged_in'):
         if session['usertype'] == 0 or session['usertype'] == 1:
@@ -335,7 +335,7 @@ def json_stop(node_name, process_name):
         return redirect(url_for('login'))
 
 # Node name list in the configuration file
-@app.route('/node/name/list')
+@app.route('/cesi/node/name/list')
 def getlist():
     if session.get('logged_in'):
         node_name_list = Config(CONFIG_FILE).node_list
@@ -344,7 +344,7 @@ def getlist():
         return redirect(url_for('login'))
 
 # Show log for process
-@app.route('/node/<node_name>/process/<process_name>/readlog')
+@app.route('/cesi/node/<node_name>/process/<process_name>/readlog')
 def readlog(node_name, process_name):
     if session.get('logged_in'):
         if session['usertype'] == 0 or session['usertype'] == 1 or session['usertype'] == 2:
@@ -364,7 +364,7 @@ def readlog(node_name, process_name):
         return jsonify( status = "error", message= "First login please")
 
 # Add user method for only admin type user
-@app.route('/add/user')
+@app.route('/cesi/add/user')
 def add_user():
     if session.get('logged_in'):
         if session['usertype'] == 0:
@@ -376,7 +376,7 @@ def add_user():
 
 
 # Delete user method for only admin type user
-@app.route('/delete/user')
+@app.route('/cesi/delete/user')
 def del_user():
     if session.get('logged_in'):
         if session['usertype'] == 0:
@@ -393,7 +393,7 @@ def del_user():
             add_log.write("%s - Unauthorized user request for delete user event. Delete user event fail .\n"%( datetime.now().ctime() ))
             return jsonify(status = 'error')
 
-@app.route('/delete/user/<username>')
+@app.route('/cesi/delete/user/<username>')
 def del_user_handler(username):
     if session.get('logged_in'):
         if session['usertype'] == 0:
@@ -420,7 +420,7 @@ def del_user_handler(username):
         return redirect(url_for('login'))
 
 # Writes new user information to database
-@app.route('/add/user/handler', methods = ['GET', 'POST'])
+@app.route('/cesi/add/user/handler', methods = ['GET', 'POST'])
 def adduserhandler():
     if session.get('logged_in'):
         if session['usertype'] == 0:
@@ -474,7 +474,7 @@ def adduserhandler():
 
 
 
-@app.route('/change/password/<username>')
+@app.route('/cesi/change/password/<username>')
 def changepassword(username):
     if session.get('logged_in'):
         if session['username'] == username:
@@ -491,7 +491,7 @@ def changepassword(username):
 
 
 
-@app.route('/change/password/<username>/handler', methods=['POST'])
+@app.route('/cesi/change/password/<username>/handler', methods=['POST'])
 def changepasswordhandler(username):
     if session.get('logged_in'):
         if session['username'] == username:
